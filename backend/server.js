@@ -1,27 +1,36 @@
-import express from 'express';
+import express from "express";
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
+
+
+// Load environment variables
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
 
 const app = express();
 
 // Middleware
 app.use(express.json());
 
-// Home Route
+// Routes
 app.get("/", (req, res) => {
     res.send("Blog API is running...");
 });
 
-// Test Route
 app.get("/api", (req, res) => {
     res.json({
         success: true,
-        message: "Welcome to the Blog API"
+        message: "Welcome to Blog API"
     });
 });
-
-// Port
-const PORT = 5000;
+app.use("/api/users", userRoutes);
 
 // Start Server
+const PORT = process.env.PORT || 5000;
+
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
