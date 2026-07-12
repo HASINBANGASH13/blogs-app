@@ -1,118 +1,224 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-// Register
-export const registerUser = async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
+import asyncHandler from "../middleware/asyncHandler.js";
+import generateToken from "../utils/generateToken.js";
 
-        const existingUser = await User.findOne({ email });
+// ===============================
+// Register User
+// POST /api/users/register
+// ===============================
+export const registerUser = asyncHandler(async (req, res) => {
 
-        if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: "User already exists"
-            });
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+        res.status(400);
+        throw new Error("Please fill all fields");
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+        res.status(400);
+        throw new Error("User already exists");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+        name,
+        email,
+        password: hashedPassword
+    });
+
+    res.status(201).json({
+        success: true,
+        message: "User registered successfully",
+        token: generateToken(user._id),
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            role: user.role
+        }
+    });
+
+});
+
+// ===============================
+// Login User
+// POST /api/users/login
+// ===============================
+export const loginUser = asyncHandler(async (req, res) => {
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        res.status(400);
+        throw new Error("Please fill all fields");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+
+    const isMatch = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    if (!isMatch) {
+        res.status(401);
+        throw new Error("Invalid email or password");
+    }
+
+    res.status(200).json({
+        success: true,
+        message: "Login successful",
+        token: generateToken(user._id),
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            role: user.role
+        }
+    });
+
+});
+
+// ===============================
+// Get Profile
+// GET /api/users/profile
+// ===============================
+export const getProfile = asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.user._id)
+        .select("-password");
+
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    res.status(200).json({
+        success: true,
+        user
+    });
+
+});
+
+// ===============================
+// Update Profile
+// PUT /api/users/profile
+// ===============================
+export const updateProfile = asyncHandler(async (req, res) => {
+
+    const { name, email } = req.body;
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    if (email && email !== user.email) {
+
+        const emailExists = await User.findOne({ email });
+
+        if (emailExists) {
+            res.status(400);
+            throw new Error("Email already exists");
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword
-        });
-
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
-
-        res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                avatar: user.avatar
-            }
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        user.email = email;
     }
-};
 
-// Login
-export const loginUser = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+    if (name) {
+        user.name = name;
+    }
 
-        const user = await User.findOne({ email });
+    await user.save();
 
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid email or password"
-            });
+    res.status(200).json({
+        success: true,
+        message: "Profile updated successfully",
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            avatar: user.avatar,
+            role: user.role
         }
+    });
 
-        const isMatch = await bcrypt.compare(password, user.password);
+});
 
-        if (!isMatch) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid email or password"
-            });
-        }
+// ===============================
+// Change Password
+// PUT /api/users/change-password
+// ===============================
+export const changePassword = asyncHandler(async (req, res) => {
 
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: "7d" }
-        );
+    const { currentPassword, newPassword } = req.body;
 
-        res.status(200).json({
-            success: true,
-            message: "Login successful",
-            token,
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                avatar: user.avatar
-            }
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    if (!currentPassword || !newPassword) {
+        res.status(400);
+        throw new Error("Please provide both passwords");
     }
-};
 
-export const getProfile = async (req, res) => {
-    try {
+    const user = await User.findById(req.user._id);
 
-        res.status(200).json({
-            success: true,
-            user: req.user
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
     }
-};
+
+    const isMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+    );
+
+    if (!isMatch) {
+        res.status(400);
+        throw new Error("Current password is incorrect");
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+
+    await user.save();
+
+    res.status(200).json({
+        success: true,
+        message: "Password changed successfully"
+    });
+
+});
+
+// ===============================
+// Delete Account
+// DELETE /api/users/profile
+// ===============================
+export const deleteAccount = asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+        res.status(404);
+        throw new Error("User not found");
+    }
+
+    await user.deleteOne();
+
+    res.status(200).json({
+        success: true,
+        message: "Account deleted successfully"
+    });
+
+});

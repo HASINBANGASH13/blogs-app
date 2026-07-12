@@ -1,176 +1,132 @@
 import Blog from "../models/Blog.js";
+import asyncHandler from "../middleware/asyncHandler.js";
 
-/*
-    Create Blog
-    POST /api/blogs
-*/
-export const createBlog = async (req, res) => {
-    try {
-        const { title, content, category } = req.body;
+// ===================================
+// Create Blog
+// POST /api/blogs
+// ===================================
+export const createBlog = asyncHandler(async (req, res) => {
 
-        const blog = await Blog.create({
-            title,
-            content,
-            category,
-            author: req.user._id
-        });
+    const { title, content, category } = req.body;
 
-        res.status(201).json({
-            success: true,
-            message: "Blog created successfully",
-            blog
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    if (!title || !content || !category) {
+        res.status(400);
+        throw new Error("Please fill all fields");
     }
-};
 
-/*
-    Get All Blogs
-    GET /api/blogs
-*/
-export const getAllBlogs = async (req, res) => {
-    try {
+    const blog = await Blog.create({
+        title,
+        content,
+        category,
+        author: req.user._id
+    });
 
-        const blogs = await Blog.find()
-            .populate("author", "name email avatar")
-            .sort({ createdAt: -1 });
+    res.status(201).json({
+        success: true,
+        message: "Blog created successfully",
+        blog
+    });
 
-        res.status(200).json({
-            success: true,
-            count: blogs.length,
-            blogs
-        });
+});
 
-    } catch (error) {
+// ===================================
+// Get All Blogs
+// GET /api/blogs
+// ===================================
+export const getAllBlogs = asyncHandler(async (req, res) => {
 
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+    const blogs = await Blog.find()
+        .populate("author", "name email avatar")
+        .sort({ createdAt: -1 });
 
+    res.status(200).json({
+        success: true,
+        count: blogs.length,
+        blogs
+    });
+
+});
+
+// ===================================
+// Get Single Blog
+// GET /api/blogs/:id
+// ===================================
+export const getBlogById = asyncHandler(async (req, res) => {
+
+    const blog = await Blog.findById(req.params.id)
+        .populate("author", "name email avatar");
+
+    if (!blog) {
+        res.status(404);
+        throw new Error("Blog not found");
     }
-};
 
-/*
-    Get Single Blog
-    GET /api/blogs/:id
-*/
-export const getBlogById = async (req, res) => {
-    try {
+    res.status(200).json({
+        success: true,
+        blog
+    });
 
-        const blog = await Blog.findById(req.params.id)
-            .populate("author", "name email avatar");
+});
 
-        if (!blog) {
-            return res.status(404).json({
-                success: false,
-                message: "Blog not found"
-            });
-        }
+// ===================================
+// Update Blog
+// PUT /api/blogs/:id
+// ===================================
+export const updateBlog = asyncHandler(async (req, res) => {
 
-        res.status(200).json({
-            success: true,
-            blog
-        });
+    const { title, content, category } = req.body;
 
-    } catch (error) {
+    const blog = await Blog.findById(req.params.id);
 
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+    if (!blog) {
+        res.status(404);
+        throw new Error("Blog not found");
     }
-};
 
-/*
-    Update Blog
-    PUT /api/blogs/:id
-*/
-export const updateBlog = async (req, res) => {
-    try {
-
-        const blog = await Blog.findById(req.params.id);
-
-        if (!blog) {
-            return res.status(404).json({
-                success: false,
-                message: "Blog not found"
-            });
-        }
-
-        // Only author can update
-        if (blog.author.toString() !== req.user._id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: "You are not authorized to update this blog."
-            });
-        }
-
-        blog.title = req.body.title || blog.title;
-        blog.content = req.body.content || blog.content;
-        blog.category = req.body.category || blog.category;
-
-        await blog.save();
-
-        res.status(200).json({
-            success: true,
-            message: "Blog updated successfully",
-            blog
-        });
-
-    } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+    // Only the blog author can update
+    if (blog.author.toString() !== req.user._id.toString()) {
+        res.status(403);
+        throw new Error("You are not authorized to update this blog.");
     }
-};
 
-/*
-    Delete Blog
-    DELETE /api/blogs/:id
-*/
-export const deleteBlog = async (req, res) => {
-    try {
+    blog.title = title || blog.title;
+    blog.content = content || blog.content;
+    blog.category = category || blog.category;
 
-        const blog = await Blog.findById(req.params.id);
+    await blog.save();
 
-        if (!blog) {
-            return res.status(404).json({
-                success: false,
-                message: "Blog not found"
-            });
-        }
+    res.status(200).json({
+        success: true,
+        message: "Blog updated successfully",
+        blog
+    });
 
-        // Only author can delete
-        if (blog.author.toString() !== req.user._id.toString()) {
-            return res.status(403).json({
-                success: false,
-                message: "You are not authorized to delete this blog."
-            });
-        }
+});
 
-        await blog.deleteOne();
+// ===================================
+// Delete Blog
+// DELETE /api/blogs/:id
+// ===================================
+export const deleteBlog = asyncHandler(async (req, res) => {
 
-        res.status(200).json({
-            success: true,
-            message: "Blog deleted successfully"
-        });
+    const blog = await Blog.findById(req.params.id);
 
-    } catch (error) {
-
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-
+    if (!blog) {
+        res.status(404);
+        throw new Error("Blog not found");
     }
-};
+
+    // Only the blog author can delete
+    if (blog.author.toString() !== req.user._id.toString()) {
+        res.status(403);
+        throw new Error("You are not authorized to delete this blog.");
+    }
+
+    await blog.deleteOne();
+
+    res.status(200).json({
+        success: true,
+        message: "Blog deleted successfully"
+    });
+
+});
