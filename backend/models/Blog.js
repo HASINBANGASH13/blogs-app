@@ -20,11 +20,11 @@ const blogSchema = new mongoose.Schema(
             default: ""
         },
 
-        category: {
-            type: String,
-            required: [true, "Category is required"],
-            trim: true
-        },
+       category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: true
+},
 
         author: {
             type: mongoose.Schema.Types.ObjectId,
