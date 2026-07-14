@@ -4,7 +4,10 @@ import {
     Route
 } from "react-router-dom";
 
+import { ToastContainer } from "react-toastify";
+
 import MainLayout from "./layouts/MainLayout";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
@@ -15,20 +18,21 @@ import EditBlog from "./pages/EditBlog/EditBlog";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
 import NotFound from "./pages/NotFound/NotFound";
-import { ToastContainer } from "react-toastify";
 
 function App() {
     return (
         <BrowserRouter>
+
             <Routes>
 
                 <Route element={<MainLayout />}>
 
+                    {/* Public Routes */}
                     <Route
                         path="/"
                         element={<Home />}
                     />
-
+                 
                     <Route
                         path="/login"
                         element={<Login />}
@@ -44,24 +48,41 @@ function App() {
                         element={<BlogDetails />}
                     />
 
+                    {/* Protected Routes */}
                     <Route
                         path="/create-blog"
-                        element={<CreateBlog />}
+                        element={
+                            <ProtectedRoute>
+                                <CreateBlog />
+                            </ProtectedRoute>
+                        }
                     />
 
                     <Route
                         path="/edit-blog/:id"
-                        element={<EditBlog />}
+                        element={
+                            <ProtectedRoute>
+                                <EditBlog />
+                            </ProtectedRoute>
+                        }
                     />
 
                     <Route
                         path="/dashboard"
-                        element={<Dashboard />}
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
                     />
 
                     <Route
                         path="/profile"
-                        element={<Profile />}
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        }
                     />
 
                 </Route>
@@ -74,10 +95,11 @@ function App() {
             </Routes>
 
             <ToastContainer
-    position="top-right"
-    autoClose={3000}
-    theme="colored"
-/>
+                position="top-right"
+                autoClose={3000}
+                theme="colored"
+            />
+
         </BrowserRouter>
     );
 }
