@@ -1,23 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import {
+    BrowserRouter,
+    Routes,
+    Route
+} from "react-router-dom";
+
+import MainLayout from "./layouts/MainLayout";
+
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import BlogDetails from "./pages/BlogDetails/BlogDetails";
+import CreateBlog from "./pages/CreateBlog/CreateBlog";
+import EditBlog from "./pages/EditBlog/EditBlog";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Profile from "./pages/Profile/Profile";
+import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
-      <div className="rounded-xl bg-white p-10 shadow-xl">
-        <h1 className="text-4xl font-bold text-blue-600">
-          MERN Blog App 🚀
-        </h1>
+    return (
+        <BrowserRouter>
+            <Routes>
 
-        <p className="mt-4 text-gray-600">
-          Tailwind CSS v4 is working!
-        </p>
-      </div>
-    </div>
-  );
+                <Route element={<MainLayout />}>
+
+                    <Route
+                        path="/"
+                        element={<Home />}
+                    />
+
+                    <Route
+                        path="/login"
+                        element={<Login />}
+                    />
+
+                    <Route
+                        path="/register"
+                        element={<Register />}
+                    />
+
+                    <Route
+                        path="/blogs/:id"
+                        element={<BlogDetails />}
+                    />
+
+                    <Route
+                        path="/create-blog"
+                        element={<CreateBlog />}
+                    />
+
+                    <Route
+                        path="/edit-blog/:id"
+                        element={<EditBlog />}
+                    />
+
+                    <Route
+                        path="/dashboard"
+                        element={<Dashboard />}
+                    />
+
+                    <Route
+                        path="/profile"
+                        element={<Profile />}
+                    />
+
+                </Route>
+
+                <Route
+                    path="*"
+                    element={<NotFound />}
+                />
+
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default App;
