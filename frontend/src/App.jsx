@@ -15,6 +15,7 @@ import EditBlog from "./pages/EditBlog/EditBlog";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
 import NotFound from "./pages/NotFound/NotFound";
+import { ToastContainer } from "react-toastify";
 
 function App() {
     return (
@@ -71,6 +72,12 @@ function App() {
                 />
 
             </Routes>
+
+            <ToastContainer
+    position="top-right"
+    autoClose={3000}
+    theme="colored"
+/>
         </BrowserRouter>
     );
 }
