@@ -303,3 +303,29 @@ export const toggleLike = asyncHandler(async (req, res) => {
     });
 
 });
+
+// ===================================
+// Get Logged-in User Blogs
+// GET /api/blogs/myblogs
+// ===================================
+export const getMyBlogs = asyncHandler(async (req, res) => {
+
+    const blogs = await Blog.find({
+        author: req.user._id
+    })
+        .populate("author", "name")
+        .populate("category", "name")
+        .sort({ createdAt: -1 });
+
+    const formattedBlogs = blogs.map(blog => ({
+        ...blog.toObject(),
+        likesCount: blog.likes.length
+    }));
+
+    res.status(200).json({
+        success: true,
+        count: formattedBlogs.length,
+        blogs: formattedBlogs
+    });
+
+});

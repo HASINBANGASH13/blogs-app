@@ -83,3 +83,12 @@ export const toggleLike = async (id) => {
     return response.data;
 
 };
+
+
+export const getMyBlogs = async () => {
+
+    const response = await api.get("/blogs/myblogs");
+
+    return response.data;
+
+};
