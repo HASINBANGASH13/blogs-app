@@ -3,21 +3,29 @@ import { useParams } from "react-router-dom";
 import {
     FaHeart,
     FaUser,
-    FaCalendarAlt
+    FaCalendarAlt, 
+    FaTrash,
+    FaEdit
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+
 import { toast } from "react-toastify";
 
 import useAuth from "../../hooks/useAuth";
 
 import {
     getBlog,
-    toggleLike
+    toggleLike,
+    deleteBlog
 } from "../../services/blogService";
+
 
 import CommentForm from "../../components/CommentForm/CommentForm";
 import CommentList from "../../components/CommentList/CommentList";
 
 function BlogDetails() {
+
+    const navigate = useNavigate();
 
     const { id } = useParams();
 
@@ -64,6 +72,33 @@ function BlogDetails() {
         fetchBlog();
 
     }, [id]);
+// ==================delete===============
+    const handleDelete = async () => {
+
+    const confirmed = window.confirm(
+        "Are you sure you want to delete this blog?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+
+        await deleteBlog(blog._id);
+
+        toast.success("Blog deleted successfully.");
+
+        navigate("/");
+
+    } catch (error) {
+
+        toast.error(
+            error.response?.data?.message ||
+            "Failed to delete blog"
+        );
+
+    }
+
+};
 
     // ===============================
     // Like / Unlike
@@ -189,7 +224,8 @@ function BlogDetails() {
         return String(likeId) === String(user._id);
 
     });
-
+const isAuthor =
+    user?._id === blog.author?._id;
     return (
 
         <div className="mx-auto max-w-4xl">
@@ -209,6 +245,35 @@ function BlogDetails() {
                 {blog.title}
 
             </h1>
+ {isAuthor && (
+
+    <div className="mt-6 flex gap-4">
+
+        <button
+            onClick={() => navigate(`/edit-blog/${blog._id}`)}
+            className="flex items-center gap-2 rounded-lg bg-yellow-500 px-5 py-3 text-white transition hover:bg-yellow-600"
+        >
+
+            <FaEdit />
+
+            Edit Blog
+
+        </button>
+
+        <button
+            onClick={handleDelete}
+            className="flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 text-white transition hover:bg-red-700"
+        >
+
+            <FaTrash />
+
+            Delete Blog
+
+        </button>
+
+    </div>
+
+)}
 
             {/* Meta */}
 
