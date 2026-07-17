@@ -19,11 +19,16 @@ function CommentList({
 
     const [loading, setLoading] = useState(true);
 
+    // ===============================
+    // Load Comments
+    // ===============================
     useEffect(() => {
 
         const fetchComments = async () => {
 
             try {
+
+                setLoading(true);
 
                 const data = await getComments(blogId);
 
@@ -34,11 +39,8 @@ function CommentList({
             } catch (error) {
 
                 toast.error(
-
                     error.response?.data?.message ||
-
                     "Failed to load comments"
-
                 );
 
             } finally {
@@ -51,19 +53,35 @@ function CommentList({
 
         fetchComments();
 
-    }, [blogId, refresh]);
+    }, [blogId, refresh, onCountChange]);
 
-    const handleDelete = (id) => {
+    // ===============================
+    // Delete Comment
+    // ===============================
+    const handleDelete = (commentId) => {
 
-        const updated = comments.filter(
-
-            comment => comment._id !== id
-
+        const updatedComments = comments.filter(
+            (comment) => comment._id !== commentId
         );
 
-        setComments(updated);
+        setComments(updatedComments);
 
-        onCountChange?.(updated.length);
+        onCountChange?.(updatedComments.length);
+
+    };
+
+    // ===============================
+    // Update Comment
+    // ===============================
+    const handleUpdate = (updatedComment) => {
+
+        setComments((prev) =>
+            prev.map((comment) =>
+                comment._id === updatedComment._id
+                    ? updatedComment
+                    : comment
+            )
+        );
 
     };
 
@@ -71,11 +89,11 @@ function CommentList({
 
         return (
 
-            <p className="text-gray-500">
+            <div className="rounded-lg border bg-white p-6 text-center">
 
                 Loading comments...
 
-            </p>
+            </div>
 
         );
 
@@ -85,11 +103,11 @@ function CommentList({
 
         return (
 
-            <p className="text-gray-500">
+            <div className="rounded-lg border bg-white p-6 text-center text-gray-500">
 
                 No comments yet.
 
-            </p>
+            </div>
 
         );
 
@@ -99,16 +117,13 @@ function CommentList({
 
         <div className="space-y-5">
 
-            {comments.map(comment => (
+            {comments.map((comment) => (
 
                 <CommentItem
-
                     key={comment._id}
-
                     comment={comment}
-
                     onDelete={handleDelete}
-
+                    onUpdate={handleUpdate}
                 />
 
             ))}
