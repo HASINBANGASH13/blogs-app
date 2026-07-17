@@ -5,9 +5,12 @@ import api from "./api";
 // ===============================
 export const getBlogs = async (params = {}) => {
 
-    const response = await api.get("/blogs", {
-        params
-    });
+    const response = await api.get(
+        "/blogs",
+        {
+            params
+        }
+    );
 
     return response.data;
 
