@@ -8,6 +8,7 @@ import userRoutes from "./routes/userRoutes.js";
 import blogRoutes from "./routes/blogRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import notFound from "./middleware/notFound.js";
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -31,6 +32,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/categories", categoryRoutes);
+app.use("/api/admin", adminRoutes);
 
 // 404 Middleware
 app.use(notFound);
