@@ -18,6 +18,7 @@ import EditBlog from "./pages/EditBlog/EditBlog";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
 import EditProfile from "./pages/EditProfile/EditProfile";
+import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
@@ -67,6 +68,14 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route
+    path="/profile/change-password"
+    element={
+        <ProtectedRoute>
+            <ChangePassword />
+        </ProtectedRoute>
+    }
+/>
 
                     <Route
                         path="/dashboard"
