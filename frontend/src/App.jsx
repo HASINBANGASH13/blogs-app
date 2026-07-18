@@ -21,6 +21,15 @@ import EditProfile from "./pages/EditProfile/EditProfile";
 import ChangePassword from "./pages/ChangePassword/ChangePassword";
 import NotFound from "./pages/NotFound/NotFound";
 
+import AdminLayout from "./layouts/AdminLayout";
+
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminUsers from "./pages/Admin/AdminUsers";
+import AdminBlogs from "./pages/Admin/AdminBlogs";
+import AdminCategories from "./pages/Admin/AdminCategories";
+
+import AdminProtectedRoute from "./components/AdminProtectedRoute/AdminProtectedRoute";
+
 function App() {
     return (
         <BrowserRouter>
@@ -28,6 +37,37 @@ function App() {
             <Routes>
 
                 <Route element={<MainLayout />}>
+
+                <Route
+    path="/admin"
+    element={
+        <AdminProtectedRoute>
+            <AdminLayout />
+        </AdminProtectedRoute>
+    }
+>
+
+    <Route
+        index
+        element={<AdminDashboard />}
+    />
+
+    <Route
+        path="users"
+        element={<AdminUsers />}
+    />
+
+    <Route
+        path="blogs"
+        element={<AdminBlogs />}
+    />
+
+    <Route
+        path="categories"
+        element={<AdminCategories />}
+    />
+
+</Route>
 
                     {/* Public Routes */}
                     <Route
