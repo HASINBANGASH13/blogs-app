@@ -17,6 +17,7 @@ import CreateBlog from "./pages/CreateBlog/CreateBlog";
 import EditBlog from "./pages/EditBlog/EditBlog";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
+import EditProfile from "./pages/EditProfile/EditProfile";
 import NotFound from "./pages/NotFound/NotFound";
 
 function App() {
@@ -84,6 +85,15 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                     <Route
+                        path="/profile/edit"
+                        element={
+                            <ProtectedRoute>
+                                <EditProfile />
+                            </ProtectedRoute>
+                        }
+                    />
+                    
 
                 </Route>
 

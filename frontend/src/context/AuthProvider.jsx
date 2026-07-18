@@ -34,6 +34,7 @@ function AuthProvider({ children }) {
         } catch (error) {
 
             localStorage.removeItem("token");
+
             setUser(null);
 
         } finally {
@@ -45,7 +46,9 @@ function AuthProvider({ children }) {
     };
 
     useEffect(() => {
+
         loadUser();
+
     }, []);
 
     // =============================
@@ -79,6 +82,15 @@ function AuthProvider({ children }) {
     };
 
     // =============================
+    // Update User
+    // =============================
+    const updateUser = (updatedUser) => {
+
+        setUser(updatedUser);
+
+    };
+
+    // =============================
     // Logout
     // =============================
     const logout = () => {
@@ -90,6 +102,7 @@ function AuthProvider({ children }) {
     };
 
     return (
+
         <AuthContext.Provider
             value={{
                 user,
@@ -97,11 +110,15 @@ function AuthProvider({ children }) {
                 login,
                 register,
                 logout,
-                loadUser
+                loadUser,
+                updateUser
             }}
         >
+
             {children}
+
         </AuthContext.Provider>
+
     );
 
 }

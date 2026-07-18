@@ -1,5 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
+import Blog from "../models/Blog.js";
+import Comment from "../models/Comment.js";
 
 import asyncHandler from "../middleware/asyncHandler.js";
 import generateToken from "../utils/generateToken.js";
@@ -106,9 +108,29 @@ export const getProfile = asyncHandler(async (req, res) => {
         throw new Error("User not found");
     }
 
+    const blogs = await Blog.find({
+        author: user._id
+    });
+
+    const blogCount = blogs.length;
+
+    const totalLikes = blogs.reduce(
+        (sum, blog) => sum + blog.likes.length,
+        0
+    );
+
+    const commentCount = await Comment.countDocuments({
+        user: user._id
+    });
+
     res.status(200).json({
         success: true,
-        user
+        user,
+        stats: {
+            blogs: blogCount,
+            likes: totalLikes,
+            comments: commentCount
+        }
     });
 
 });
