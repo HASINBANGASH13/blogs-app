@@ -1,5 +1,9 @@
 import api from "./api";
 
+// ======================================
+// Dashboard
+// ======================================
+
 export const getDashboardStats = async () => {
 
     const response = await api.get("/admin/dashboard");
@@ -7,6 +11,10 @@ export const getDashboardStats = async () => {
     return response.data;
 
 };
+
+// ======================================
+// Users
+// ======================================
 
 export const getAllUsers = async () => {
 
@@ -31,6 +39,28 @@ export const deleteUser = async (id) => {
 
     const response = await api.delete(
         `/admin/users/${id}`
+    );
+
+    return response.data;
+
+};
+
+// ======================================
+// Blogs
+// ======================================
+
+export const getAllBlogs = async () => {
+
+    const response = await api.get("/admin/blogs");
+
+    return response.data;
+
+};
+
+export const deleteBlog = async (id) => {
+
+    const response = await api.delete(
+        `/admin/blogs/${id}`
     );
 
     return response.data;

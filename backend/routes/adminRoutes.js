@@ -6,7 +6,9 @@ import {
     getDashboard,
     getAllUsers,
     updateUserRole,
-    deleteUser
+    deleteUser,
+    getAllBlogsAdmin,
+    deleteBlogAdmin
 } from "../controllers/adminController.js";
 
 
@@ -48,5 +50,15 @@ router.delete(
     adminMiddleware,
     deleteUser
 );
+
+// ======================================
+// Blog Management
+// ======================================
+
+// Get all blogs
+router.get("/blogs", authMiddleware, adminMiddleware, getAllBlogsAdmin);
+
+// Delete any blog
+router.delete("/blogs/:id", authMiddleware, adminMiddleware, deleteBlogAdmin);
 
 export default router;

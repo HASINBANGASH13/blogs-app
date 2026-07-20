@@ -115,3 +115,52 @@ export const deleteUser = asyncHandler(async (req, res) => {
     });
 
 });
+
+// ======================================
+// Get All Blogs (Admin)
+// GET /api/admin/blogs
+// ======================================
+export const getAllBlogsAdmin = asyncHandler(async (req, res) => {
+
+    const blogs = await Blog.find()
+        .populate("author", "name email")
+        .populate("category", "name")
+        .sort({ createdAt: -1 });
+
+    res.status(200).json({
+        success: true,
+        count: blogs.length,
+        blogs
+    });
+
+});
+
+// ======================================
+// Delete Any Blog (Admin)
+// DELETE /api/admin/blogs/:id
+// ======================================
+export const deleteBlogAdmin = asyncHandler(async (req, res) => {
+
+    const blog = await Blog.findById(req.params.id);
+
+    if (!blog) {
+
+        res.status(404);
+
+        throw new Error("Blog not found");
+
+    }
+
+    // Delete related comments
+    await Comment.deleteMany({
+        blog: blog._id
+    });
+
+    await blog.deleteOne();
+
+    res.status(200).json({
+        success: true,
+        message: "Blog deleted successfully"
+    });
+
+});
