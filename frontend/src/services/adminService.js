@@ -66,3 +66,36 @@ export const deleteBlog = async (id) => {
     return response.data;
 
 };
+
+// ======================================
+// Categories
+// ======================================
+
+export const getAllCategories = async () => {
+
+    const response = await api.get("/admin/categories");
+
+    return response.data;
+
+};
+
+export const updateCategory = async (id, name) => {
+
+    const response = await api.put(
+        `/admin/categories/${id}`,
+        { name }
+    );
+
+    return response.data;
+
+};
+
+export const deleteCategory = async (id) => {
+
+    const response = await api.delete(
+        `/admin/categories/${id}`
+    );
+
+    return response.data;
+
+};

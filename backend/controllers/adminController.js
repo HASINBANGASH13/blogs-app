@@ -164,3 +164,72 @@ export const deleteBlogAdmin = asyncHandler(async (req, res) => {
     });
 
 });
+// ======================================
+// Get All Categories
+// GET /api/admin/categories
+// ======================================
+export const getAllCategories = asyncHandler(async (req, res) => {
+
+    const categories = await Category.find()
+        .sort({ createdAt: -1 });
+
+    res.status(200).json({
+        success: true,
+        count: categories.length,
+        categories
+    });
+
+});
+
+// ======================================
+// Update Category
+// PUT /api/admin/categories/:id
+// ======================================
+export const updateCategory = asyncHandler(async (req, res) => {
+
+    const { name } = req.body;
+
+    if (!name) {
+        res.status(400);
+        throw new Error("Category name is required");
+    }
+
+    const category = await Category.findById(req.params.id);
+
+    if (!category) {
+        res.status(404);
+        throw new Error("Category not found");
+    }
+
+    category.name = name;
+
+    await category.save();
+
+    res.status(200).json({
+        success: true,
+        message: "Category updated successfully",
+        category
+    });
+
+});
+// ======================================
+// Delete Category
+// DELETE /api/admin/categories/:id
+// ======================================
+export const deleteCategory = asyncHandler(async (req, res) => {
+
+    const category = await Category.findById(req.params.id);
+
+    if (!category) {
+        res.status(404);
+        throw new Error("Category not found");
+    }
+
+    await category.deleteOne();
+
+    res.status(200).json({
+        success: true,
+        message: "Category deleted successfully"
+    });
+
+});

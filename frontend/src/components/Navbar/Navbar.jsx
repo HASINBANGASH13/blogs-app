@@ -20,11 +20,13 @@ function Navbar() {
     };
 
     return (
+
         <nav className="bg-white shadow-md">
 
             <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
 
                 {/* Logo */}
+
                 <Link
                     to="/"
                     className="text-2xl font-bold text-blue-600"
@@ -33,61 +35,83 @@ function Navbar() {
                 </Link>
 
                 {/* Navigation */}
+
                 <div className="flex items-center gap-5">
 
                     <Link
                         to="/"
-                        className="text-gray-700 hover:text-blue-600"
+                        className="text-gray-700 transition hover:text-blue-600"
                     >
                         Home
                     </Link>
 
                     {user ? (
+
                         <>
+
                             <Link
                                 to="/create-blog"
-                                className="text-gray-700 hover:text-blue-600"
+                                className="text-gray-700 transition hover:text-blue-600"
                             >
                                 Create Blog
                             </Link>
 
                             <Link
                                 to="/dashboard"
-                                className="text-gray-700 hover:text-blue-600"
+                                className="text-gray-700 transition hover:text-blue-600"
                             >
                                 Dashboard
                             </Link>
 
+                            {/* Admin Panel */}
+
+                            {user.role === "admin" && (
+
+                                <Link
+                                    to="/admin"
+                                    className="rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white transition hover:bg-purple-700"
+                                >
+                                    Admin Panel
+                                </Link>
+
+                            )}
+
                             <Link
                                 to="/profile"
-                                className="text-gray-700 hover:text-blue-600"
+                                className="text-gray-700 transition hover:text-blue-600"
                             >
                                 {user.name}
                             </Link>
 
                             <button
                                 onClick={handleLogout}
-                                className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                                className="rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition hover:bg-red-600"
                             >
                                 Logout
                             </button>
+
                         </>
+
                     ) : (
+
                         <>
+
                             <Link
                                 to="/login"
-                                className="text-gray-700 hover:text-blue-600"
+                                className="text-gray-700 transition hover:text-blue-600"
                             >
                                 Login
                             </Link>
 
                             <Link
                                 to="/register"
-                                className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+                                className="rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white transition hover:bg-blue-700"
                             >
                                 Register
                             </Link>
+
                         </>
+
                     )}
 
                 </div>
@@ -95,7 +119,9 @@ function Navbar() {
             </div>
 
         </nav>
+
     );
+
 }
 
 export default Navbar;

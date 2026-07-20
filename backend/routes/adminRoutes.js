@@ -8,7 +8,10 @@ import {
     updateUserRole,
     deleteUser,
     getAllBlogsAdmin,
-    deleteBlogAdmin
+    deleteBlogAdmin,
+    getAllCategories,
+updateCategory,
+deleteCategory
 } from "../controllers/adminController.js";
 
 
@@ -60,5 +63,27 @@ router.get("/blogs", authMiddleware, adminMiddleware, getAllBlogsAdmin);
 
 // Delete any blog
 router.delete("/blogs/:id", authMiddleware, adminMiddleware, deleteBlogAdmin);
+
+// Categories
+router.get(
+    "/categories",
+    authMiddleware,
+    adminMiddleware,
+    getAllCategories
+);
+
+router.put(
+    "/categories/:id",
+    authMiddleware,
+    adminMiddleware,
+    updateCategory
+);
+
+router.delete(
+    "/categories/:id",
+    authMiddleware,
+    adminMiddleware,
+    deleteCategory
+);
 
 export default router;
